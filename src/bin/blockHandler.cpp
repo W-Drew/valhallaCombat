@@ -133,9 +133,9 @@ void blockHandler::onBlockKeyDown() {
 	
 	switch (pcBlockWindowPenalty) {
 	case blockWindowPenaltyLevel::none: break;
-	case blockWindowPenaltyLevel::light: blockWindow *= 0.8; break;
-	case blockWindowPenaltyLevel::medium: blockWindow *= 0.5; break;
-	case blockWindowPenaltyLevel::heavy: blockWindow *= 0.3; break;
+	case blockWindowPenaltyLevel::light: blockWindow *= 0.8f; break;
+	case blockWindowPenaltyLevel::medium: blockWindow *= 0.5f; break;
+	case blockWindowPenaltyLevel::heavy: blockWindow *= 0.3f; break;
 	}
 	pcTimedBlockTimer = blockWindow;
 	ValhallaCombat::GetSingleton()->activateUpdate(ValhallaCombat::HANDLER::blockHandler);
@@ -183,7 +183,7 @@ void blockHandler::OnPcSuccessfulTimedBlock() {
 
 bool blockHandler::isInBlockAngle(RE::Actor* blocker, RE::TESObjectREFR* a_obj) 
 {
-	auto angle = blocker->GetHeadingAngle(a_obj);
+	auto angle = Utils::TESObjectREFR::GetHeadingAngle(blocker, a_obj);
 	return (angle <= data::fCombatHitConeAngle && angle >= -data::fCombatHitConeAngle);
 }
 
@@ -254,7 +254,7 @@ bool blockHandler::processProjectileBlock(RE::Actor* a_blocker, RE::Projectile* 
 		} else { // parry arrow
 			auto launcher = a_projectile->GetProjectileRuntimeData().weaponSource;
 			auto ammo = a_projectile->GetProjectileRuntimeData().ammoSource;
-			float cost = 0;
+			cost = 0;
 			if (launcher) {
 				cost += launcher->GetAttackDamage();
 			}
@@ -314,7 +314,7 @@ inline float getBlockStaminaCostMult(RE::Actor* blocker, RE::Actor* aggressor, S
 {
 
 	if (a_hitFlag.any(HITFLAG::kBlockWithWeapon)) {
-		//DEBUG("hit blocked with weapon");
+		//logger::debug("hit blocked with weapon");
 		if (blocker->IsPlayerRef()) {
 			return settings::fBckWpnStaminaMult_PC_Block_NPC;
 		}
@@ -328,7 +328,7 @@ inline float getBlockStaminaCostMult(RE::Actor* blocker, RE::Actor* aggressor, S
 		}
 	}
 	else {
-		//DEBUG("hit blocked with shield");
+		//logger::debug("hit blocked with shield");
 		if (blocker->IsPlayerRef()) {
 			return settings::fBckShdStaminaMult_PC_Block_NPC;
 		}
@@ -607,11 +607,11 @@ void blockHandler::playBlockSlowTime(blockType blockType) {
 	if (slowDuration == 0) {
 		return;
 	}
-	inlineUtils::slowTime(slowDuration, 0.1);
+	inlineUtils::slowTime(slowDuration, 0.1f);
 }
 
 void blockHandler::playBlockEffects(RE::Actor* blocker, RE::Actor* attacker, blockType blockType) {
-	//DEBUG("playing effects");
+	//logger::debug("playing effects");
 	bool shieldEquipped = RE::Offset::getEquippedShield(blocker);
 	if (settings::bTimeBlockSFX) {
 		playBlockSFX(blocker, blockType, !shieldEquipped);

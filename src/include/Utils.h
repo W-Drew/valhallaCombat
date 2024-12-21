@@ -3,10 +3,24 @@
 #include "bin/ValhallaCombat.hpp"
 #include "include/lib/robin_hood.h"
 #include <cmath>
+#include <numbers>
 #include  <random>
 #include  <iterator>
 #define CONSOLELOG(msg) 	RE::ConsoleLog::GetSingleton()->Print(msg);
-#define PI 3.1415926535897932384626
+
+inline constexpr float PI = std::numbers::pi_v<float>;
+
+namespace REL
+{
+// Similar to REL::RelocateMemberIfNewer except for the parent. Potentially upstream to CommonlibNG if use is common
+template <class T, class This>
+[[nodiscard]] inline T& RelocateParentIfNewer(Version v, This* a_self, std::ptrdiff_t older, std::ptrdiff_t newer)
+{
+	return *reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(a_self) -
+									(REL::Module::get().version().compare(v) == std::strong_ordering::less ? older : newer));
+}
+}
+
 namespace Utils
 {
 	namespace Actor
@@ -43,6 +57,11 @@ namespace Utils
 			return &REL::RelocateParentIfNewer<RE::Actor>(SKSE::RUNTIME_SSE_1_6_629, a_avOwner, 0xB0, 0xB8);
 		}
 	}
+
+	namespace TESObjectREFR
+	{
+		double GetHeadingAngle(RE::TESObjectREFR* a_object, RE::TESObjectREFR* a_target);
+	}
 }
 
 
@@ -75,7 +94,8 @@ namespace inlineUtils
 
 	template<typename Iter, typename RandomGenerator>
 	Iter select_randomly(Iter start, Iter end, RandomGenerator& g) {
-		std::uniform_int_distribution<> dis(0, std::distance(start, end) - 1);
+		using difference_type = typename std::iterator_traits<Iter>::difference_type;
+		std::uniform_int_distribution<difference_type> dis(0, std::distance(start, end) - 1);
 		std::advance(start, dis(g));
 		return start;
 	}
@@ -271,7 +291,7 @@ public:
 	static void clampDmg(float& dmg, RE::Actor* aggressor) {
 		auto a_weapon = Utils::Actor::getWieldingWeapon(aggressor);
 		if (a_weapon) {
-			//DEBUG("weapon to clamp damage: {}", a_weapon->GetName());
+			//logger::debug("weapon to clamp damage: {}", a_weapon->GetName());
 			dmg = min(dmg, a_weapon->GetAttackDamage());
 		}
 	}
@@ -519,14 +539,14 @@ namespace DtryUtils
 				logger::critical("Error: TESDataHandler not found.");
 			}
 			if (!_dataHandler->LookupModByName(pluginName)) {
-				logger::critical("Error: {} not found.", pluginName);
+				logger::critical("Error: {} not found.", pluginName.c_str());
 			}
-			logger::info("Loading from plugin {}...", pluginName);
+			logger::info("Loading from plugin {}...", pluginName.c_str());
 		}
 
 		~formLoader()
 		{
-			logger::info("Loaded {} forms from {}", _loadedForms, _pluginName);
+			logger::info("Loaded {} forms from {}", _loadedForms, _pluginName.c_str());
 		}
 
 		/*Load a form from the plugin.*/
@@ -535,7 +555,7 @@ namespace DtryUtils
 		{
 			formRet = _dataHandler->LookupForm<formType>(formID, _pluginName);
 			if (!formRet) {
-				logger::critical("Error: null formID or wrong form type when loading {} from {}", formID, _pluginName);
+				logger::critical("Error: null formID or wrong form type when loading {} from {}", formID, _pluginName.c_str());
 			}
 			_loadedForms++;
 		}

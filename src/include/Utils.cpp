@@ -130,7 +130,7 @@ void Utils::Actor::safeRemovePerk(RE::BGSPerk* a_perk, RE::Actor* a_actor)
 
 bool Utils::Actor::isBackFacing(RE::Actor* actor1, RE::Actor* actor2)
 {
-	auto angle = actor1->GetHeadingAngle(actor2);
+	auto angle = Utils::TESObjectREFR::GetHeadingAngle(actor1, actor2);
 	if (90 < angle || angle < -90) {
 		return true;
 	} else {
@@ -150,7 +150,7 @@ bool Utils::Actor::canBlock(RE::Actor* a_actor)
 		return true;
 	}
 	RE::ActorState* state = a_actor->AsActorState();
-	return !isJumping(a_actor) && state->GetKnockState() == RE::KNOCK_STATE_ENUM::kNormal && state->GetAttackState() == RE::ATTACK_STATE_ENUM::kNone && !state->IsSwimming() && state->IsWeaponDrawn() && !state->IsSprinting() && !state->IsStaggered();
+	return !isJumping(a_actor) && state->GetKnockState() == RE::KNOCK_STATE_ENUM::kNormal && state->GetAttackState() == RE::ATTACK_STATE_ENUM::kNone && !state->IsSwimming() && state->IsWeaponDrawn() && !state->IsSprinting() && !state->actorState2.staggered;
 }
 
 bool Utils::Actor::getGraphVariable(bool& r_gv, RE::Actor* a_actor, const RE::BSFixedString& a_variableName)
@@ -195,4 +195,18 @@ bool Utils::Actor::isBashing(RE::Actor* a_actor)
 		}
 	}
 	return false;
+}
+
+inline bool GetHeadingAngleRE(RE::TESObjectREFR* a_object, RE::TESObjectREFR* a_target, bool a_unk_flag, double& a_result)
+{
+	using func_t = decltype(&GetHeadingAngleRE);
+	REL::Relocation<func_t> func{ RELOCATION_ID(21050, 21500) };
+	return func(a_object, a_target, a_unk_flag, a_result);
+}
+
+double Utils::TESObjectREFR::GetHeadingAngle(RE::TESObjectREFR* a_object, RE::TESObjectREFR* a_target)
+{
+	double angle = 0;
+	GetHeadingAngleRE(a_object, a_target, false, angle);
+	return angle;
 }

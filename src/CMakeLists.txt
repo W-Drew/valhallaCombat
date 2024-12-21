@@ -1,3 +1,5 @@
+add_commonlibsse_plugin(${PROJECT_NAME} SOURCES bin/main.cpp)
+
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 set(SOURCE_DIR "${ROOT_DIR}/src")
@@ -27,21 +29,7 @@ configure_file(
 
 source_group("src" FILES "${VERSION_HEADER}")
 
-configure_file(
-	"${ROOT_DIR}/cmake/version.rc.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/version.rc"
-	@ONLY
-)
-
-add_library(
-	"${PROJECT_NAME}"
-	SHARED
-	${SOURCE_FILES}
-	"${VERSION_HEADER}"
-	"${CMAKE_CURRENT_BINARY_DIR}/version.rc"
-	"${ROOT_DIR}/.clang-format"
-	"${ROOT_DIR}/.editorconfig"
-)
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES} ${VERSION_HEADER})
 
 target_compile_features(
 	"${PROJECT_NAME}"
@@ -63,6 +51,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 			"/Zc:preprocessor"	# Enable preprocessor conformance mode
 
 			"/wd4200" # nonstandard extension used : zero-sized array in struct/union
+			"/wd4100" # Unused function parameters are everywhere
 
 			"$<$<CONFIG:DEBUG>:>"
 			"$<$<CONFIG:RELEASE>:/Zc:inline;/JMC-;/Ob3>"
@@ -83,19 +72,6 @@ target_include_directories(
 		"${SOURCE_DIR}"
 )
 
-set(SKSE_SUPPORT_XBYAK ON)
-
-add_subdirectory("$ENV{CommonLibSSEPath_NG}" CommonLibSSE EXCLUDE_FROM_ALL)
-
-find_package(xbyak REQUIRED CONFIG)
-
-target_link_libraries(
-	"${PROJECT_NAME}"
-	PRIVATE
-		CommonLibSSE::CommonLibSSE
-		xbyak::xbyak
-)
-
 target_precompile_headers(
 	"${PROJECT_NAME}"
 	PRIVATE
@@ -107,13 +83,6 @@ install(
 		"$<TARGET_FILE:${PROJECT_NAME}>"
 	DESTINATION "SKSE/Plugins"
 	COMPONENT "main"
-)
-
-install(
-	FILES
-		"$<TARGET_PDB_FILE:${PROJECT_NAME}>"
-	DESTINATION "/"
-	COMPONENT "pdbs"
 )
 
 if("${COPY_OUTPUT}")

@@ -60,7 +60,7 @@ void hitProcessor::processHit(RE::Actor* a_aggressor, RE::Actor* a_victim, RE::H
 			executionHandler::GetSingleton()->attemptExecute(a_aggressor, a_victim);
 		}
 	}
-	//DEBUG("test execution");
+	//logger::debug("test execution");
 	//executionHandler::GetSingleton()->playExecutionIdle(aggressor, victim, data::testIdle);
 	if (hitFlag.any(HITFLAG::kPowerAttack)) {
 		bool b;

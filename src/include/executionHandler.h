@@ -98,7 +98,7 @@ namespace inlineUtils
 	inline RE::TESIdleForm* getRandomIdle(std::vector<RE::TESIdleForm*> in) {
 		//
 		// ("getting random idle");
-		//DEBUG("in size: {}", in.size());
+		//logger::debug("in size: {}", in.size());
 		auto i = rand() % in.size();
 		//
 		(i);

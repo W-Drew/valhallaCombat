@@ -27,8 +27,15 @@ option(ENABLE_SKYRIM_SE "Enable support for Skyrim SE in the dynamic runtime fea
 option(ENABLE_SKYRIM_AE "Enable support for Skyrim AE in the dynamic runtime feature." ON)
 option(ENABLE_SKYRIM_VR "Enable support for Skyrim VR in the dynamic runtime feature." OFF)
 set(BUILD_TESTS OFF)
+set(SKSE_SUPPORT_XBYAK ON)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+
+find_package(xbyak REQUIRED CONFIG)
+
+add_subdirectory("$ENV{CommonLibSSEPath_NG}" CommonLibSSE EXCLUDE_FROM_ALL)
+get_target_property(commonlib_src_dir CommonLibSSE SOURCE_DIR)
+include(${commonlib_src_dir}/cmake/CommonLibSSE.cmake) 
 
 add_subdirectory(src)
 include(cmake/packaging.cmake)

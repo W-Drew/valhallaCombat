@@ -79,12 +79,12 @@ private:
 //@param actor: actor whose info to obtain.
 //@param atkType: address to store attack type*/
 //	inline bool getAtkType(RE::Actor* actor, attackHandler::ATTACKTYPE& atkType) {
-//		//DEBUG("Getting {}'s attack from attack heap", actor->GetName());
+//		//logger::debug("Getting {}'s attack from attack heap", actor->GetName());
 //		mtx_attackerHeap.lock();
 //		auto it = attackerHeap.find(actor); //check if the actor's attack is registered
 //		if (it == attackerHeap.end()) {
 //			mtx_attackerHeap.unlock();
-//			//DEBUG("{} not found in attackState map", actor->GetName());
+//			//logger::debug("{} not found in attackState map", actor->GetName());
 //			return false;
 //		}
 //		atkType = it->second;

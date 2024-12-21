@@ -1,14 +1,16 @@
-#include "SimpleIni.h"
+/*#include "SimpleIni.h"
 #include "include/Hooks.h"
 #include "include/data.h"
 #include "include/debuffHandler.h"
 #include "include/events.h"
 #include "include/lib/TrueHUDAPI.h"
+#include "include/logger.h"
 #include "ValhallaCombat.hpp"
 #include "include/settings.h"
 #include "include/Utils.h"
 #include "include/lib/ValhallaCombatAPI.h"
 #include "include/ModAPI.h"
+
 void initTrueHUDAPI() {
 	auto val = ValhallaCombat::GetSingleton();
 	val->ersh_TrueHUD = reinterpret_cast<TRUEHUD_API::IVTrueHUD3*>(TRUEHUD_API::RequestPluginAPI(TRUEHUD_API::InterfaceVersion::V3));
@@ -81,114 +83,68 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 void onSKSEInit()
 {
 	settings::UpdateHandler::Register();
-}
+}*/
 
-namespace
-{
-	void InitializeLog()
-	{
-#ifndef NDEBUG
-		auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
-#else
-		auto path = logger::log_directory();
-		if (!path) {
-			util::report_and_fail("Failed to find standard logging directory"sv);
-		}
+/*SKSEPluginInfo(
+	.Version = Plugin::VERSION,
+	.Name = Plugin::NAME,
+	.Author = "D7ry",
+	.StructCompatibility = SKSE::StructCompatibility::Independent,
+	.RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary,
+	.MinimumSKSEVersion = REL::Version{2, 0, 0, 6} /* Game version 1.5.39 */
+//)
 
-		*path /= fmt::format("{}.log"sv, Plugin::NAME);
-		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
-#endif
-
-#ifndef NDEBUG
-		const auto level = spdlog::level::trace;
-#else
-		const auto level = spdlog::level::info;
-#endif
-
-		auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
-		log->set_level(level);
-		log->flush_on(level);
-
-		spdlog::set_default_logger(std::move(log));
-		spdlog::set_pattern("%s(%#): [%^%l%$] %v"s);
-	}
-}
-
-std::string wstring2string(const std::wstring& wstr, UINT CodePage)
-
-{
-
-	std::string ret;
-
-	int len = WideCharToMultiByte(CodePage, 0, wstr.c_str(), (int)wstr.size(), NULL, 0, NULL, NULL);
-
-	ret.resize((size_t)len, 0);
-
-	WideCharToMultiByte(CodePage, 0, wstr.c_str(), (int)wstr.size(), &ret[0], len, NULL, NULL);
-
-	return ret;
-
-}
-
-
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
-{
-	a_info->infoVersion = SKSE::PluginInfo::kVersion;
-	a_info->name = Plugin::NAME.data();
-	a_info->version = Plugin::VERSION[0];
-
-	if (a_skse->IsEditor()) {
-		logger::critical("Loaded in editor, marking as incompatible"sv);
-		return false;
-	}
-
-	const auto ver = a_skse->RuntimeVersion();
-	if (ver < SKSE::RUNTIME_SSE_1_5_39) {
-		logger::critical(FMT_STRING("Unsupported runtime version {}"), ver.string());
-		return false;
-	}
-
-	return true;
-}
-
-extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
-	SKSE::PluginVersionData v;
-
-	v.PluginVersion(Plugin::VERSION);
-	v.PluginName(Plugin::NAME);
-	v.AuthorName("D7ry");
-
-	v.UsesAddressLibrary(true);
-	v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST });
-	v.HasNoStructUse(true);
-
-	return v;
-}();
-
-
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
-{
-    #ifndef NDEBUG
+/*#ifndef NDEBUG
 	while (!IsDebuggerPresent()) { Sleep(100); }
-#endif
-	REL::Module::reset();
-	InitializeLog();
+#endif*/
+
+/*SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
+{
+    
+
+    SKSE::Init(a_skse);
+    SKSE::GetMessagingInterface()->RegisterListener([](SKSE::MessagingInterface::Message *message) {
+        if (message->type == SKSE::MessagingInterface::kDataLoaded)
+        {
+	    [[maybe_unused]] auto s = RE::ConsoleLog::GetSingleton();
+        }
+    });*/
+	/*
+	SKSE::Init(a_skse);
+	SetupLog();
+
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
-	SKSE::Init(a_skse);
+
+	SKSE::GetMessagingInterface()->RegisterListener([](SKSE::MessagingInterface::Message *message) {
+        if (message->type == SKSE::MessagingInterface::kDataLoaded)
+		{
+			logger::info("Getting singleton");
+			auto s = RE::ConsoleLog::GetSingleton();
+			if (!s)
+				logger::info("ConsoleLog singleton is null!");
+			logger::info("About to print");
+            s->Print("Hello, world!");
+		}
+    });
 
 	auto messaging = SKSE::GetMessagingInterface();
+	if (!messaging)
+		logger::info("Null messaging");
+	logger::info("GetMessagingInterface");
 	if (!messaging->RegisterListener("SKSE", MessageHandler)) {
+		logger::info("RegisterListener failed");
 		return false;
 	}
 	
-	onSKSEInit();
+	logger::info("onSKSEInit");
+	//onSKSEInit();
 
+	logger::info("return true");*/
+	/*return true;
+}*/
 
-	return true;
-}
-
-
+/*
 extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(const VAL_API::InterfaceVersion a_interfaceVersion)
 {
 	//auto api = Messaging::TrueHUDInterface::GetSingleton();
@@ -203,4 +159,18 @@ extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(const VAL_API::InterfaceVers
 	}
 	logger::info("ValhallaCombat::RequestPluginAPI requested the wrong interface version");
 	return nullptr;
+}
+*/
+
+SKSEPluginLoad(const SKSE::LoadInterface *skse) {
+    SKSE::Init(skse);
+
+    // This example prints "Hello, world!" to the Skyrim ~ console.
+    // To view it, open the ~ console from the Skyrim Main Menu.
+    SKSE::GetMessagingInterface()->RegisterListener([](SKSE::MessagingInterface::Message *message) {
+        if (message->type == SKSE::MessagingInterface::kDataLoaded)
+            RE::ConsoleLog::GetSingleton()->Print("Hello, world!");
+    });
+
+    return true;
 }

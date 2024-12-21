@@ -27,8 +27,8 @@ static void setGameSettingb(const char* a_setting, bool a_value)
 	if (!setting) {
 		logger::info("invalid setting: {}", a_setting);
 	} else {
-		logger::info("setting {} from {} to {}", a_setting, setting->GetFloat(), a_value);
-		setting->data.b = false;
+		//logger::info("setting {} from {} to {}", a_setting, setting->GetBool(), a_value);
+		setting->data.b = a_value;
 	}
 }
 
@@ -65,14 +65,10 @@ void settings::updateGameSettings() {
 	if (!gsc) {
 		return;
 	}
-	RE::Setting* bVal_TrueHudAPI_Acq = gsc->GetSetting("bVal_TrueHudAPI_Acq");
-	if (bVal_TrueHudAPI_Acq) {
-		bVal_TrueHudAPI_Acq->SetBool(ValhallaCombat::GetSingleton()->ersh_TrueHUD != nullptr);
-	}
-	RE::Setting* bVal_TrueHUDAPI_SpecialMeter_Acq = gsc->GetSetting("bVal_TrueHUDAPI_SpecialMeter_Acq");
-	if (bVal_TrueHUDAPI_SpecialMeter_Acq) {
-		bVal_TrueHUDAPI_SpecialMeter_Acq->SetBool(facts::TrueHudAPI_HasSpecialBarControl);
-	}
+
+	setGameSettingb("bVal_TrueHudAPI_Acq", ValhallaCombat::GetSingleton()->ersh_TrueHUD != nullptr);
+	setGameSettingb("bVal_TrueHUDAPI_SpecialMeter_Acq", facts::TrueHudAPI_HasSpecialBarControl);
+
 	logger::info("...done");
 }
 #define SETTINGFILE_PATH "Data\\SKSE\\Plugins\\ValhallaCombat\\Settings.ini"
