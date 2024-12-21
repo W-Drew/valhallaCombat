@@ -1,6 +1,6 @@
 #pragma once
-#include "offsets.h"
-#include "bin/ValhallaCombat.hpp"
+#include "offsets.h" 
+#include "bin/ValhallaCombat.hpp"          
 #include "include/lib/robin_hood.h"
 #include <cmath>
 #include <numbers>
@@ -73,7 +73,7 @@ namespace inlineUtils
 	{
 		auto targetPoint = causer->GetNodeByName(causer->GetActorRuntimeData().race->bodyPartData->parts[0]->targetName.c_str());
 		RE::NiPoint3 vec = targetPoint->world.translate;
-		RE::Offset::pushActorAway(causer->GetActorRuntimeData().currentProcess, target, vec, magnitude);
+		causer->GetActorRuntimeData().currentProcess->KnockExplosion(target, vec, magnitude);
 	}
 
 	inline void SetRotationMatrix(RE::NiMatrix3& a_matrix, float sacb, float cacb, float sb)
@@ -114,11 +114,11 @@ namespace inlineUtils
 	@param a_percentage: relative time speed to normal time(1).*/
 	inline void slowTime(float a_duration, float a_percentage) {
 		int duration_milisec = static_cast<int>(a_duration * 1000);
-		RE::Offset::SGTM(a_percentage);
+		RE::BSTimer::GetSingleton()->SetGlobalTimeMultiplier(a_percentage, true);
 		/*Reset time here*/
 		auto resetSlowTime = [](int a_duration) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(a_duration));
-			RE::Offset::SGTM(1);
+			RE::BSTimer::GetSingleton()->SetGlobalTimeMultiplier(1.f, true);
 		};
 		std::jthread resetThread(resetSlowTime, duration_milisec);
 		resetThread.detach();
@@ -131,7 +131,7 @@ namespace inlineUtils
 	@param victim: victim of this damage.*/
 	inline void offsetRealDamage(float& damage, RE::Actor* aggressor, RE::Actor* victim) {
 		if ((aggressor) && (aggressor->IsPlayerRef() || aggressor->IsPlayerTeammate())) {
-			switch (RE::PlayerCharacter::GetSingleton()->GetPlayerRuntimeData().difficulty) {
+			switch (RE::PlayerCharacter::GetSingleton()->GetGameStatsData().difficulty) {
 			case RE::DIFFICULTY::kNovice: damage *= data::fDiffMultHPByPCVE; break;
 			case RE::DIFFICULTY::kApprentice: damage *= data::fDiffMultHPByPCE; break;
 			case RE::DIFFICULTY::kAdept: damage *= data::fDiffMultHPByPCN; break;
@@ -141,7 +141,7 @@ namespace inlineUtils
 			}
 		}
 		else if ((victim) && (victim->IsPlayerRef() || victim->IsPlayerTeammate())) {
-			switch (RE::PlayerCharacter::GetSingleton()->GetPlayerRuntimeData().difficulty) {
+			switch (RE::PlayerCharacter::GetSingleton()->GetGameStatsData().difficulty) {
 			case RE::DIFFICULTY::kNovice: damage *= data::fDiffMultHPToPCVE; break;
 			case RE::DIFFICULTY::kApprentice: damage *= data::fDiffMultHPToPCE; break;
 			case RE::DIFFICULTY::kAdept: damage *= data::fDiffMultHPToPCN; break;
@@ -241,18 +241,21 @@ public:
 	@param formid: formid of the sound descriptor.*/
 	static void playSound(RE::Actor* a, RE::BGSSoundDescriptorForm* a_descriptor, float a_volumeOverride = 1)
 	{
-
 		RE::BSSoundHandle handle;
-		handle.soundID = static_cast<uint32_t>(-1);
-		handle.assumeSuccess = false;
-		*(uint32_t*)&handle.state = 0;
-
-		RE::Offset::soundHelper_a(RE::BSAudioManager::GetSingleton(), &handle, a_descriptor->GetFormID(), 16);
-		if (RE::Offset::set_sound_position(&handle, a->data.location.x, a->data.location.y, a->data.location.z)) {
-			handle.SetVolume(a_volumeOverride);
-			RE::Offset::soundHelper_b(&handle, a->Get3D());
-			RE::Offset::soundHelper_c(&handle);
+		if (!RE::BSAudioManager::GetSingleton()->BuildSoundDataFromDescriptor(handle, a_descriptor, 0x10))
+		{
+			logger::error("Utils::playSound::BuildSoundDataFromDescriptor failed for FormId {}", a_descriptor->GetFormID());
+			return;
 		}
+		if (!handle.SetPosition(a->data.location))
+		{
+			logger::error("Utils::playSound::SetPosition failed for actor {}", a->GetName());
+			return;
+		}
+			
+		handle.SetVolume(a_volumeOverride);
+		handle.SetObjectToFollow(a->Get3D());
+		handle.Play();
 	}
 
 	static void playSound(RE::Actor* a, std::vector<RE::BGSSoundDescriptorForm*> sounds)
@@ -292,7 +295,7 @@ public:
 		auto a_weapon = Utils::Actor::getWieldingWeapon(aggressor);
 		if (a_weapon) {
 			//logger::debug("weapon to clamp damage: {}", a_weapon->GetName());
-			dmg = min(dmg, a_weapon->GetAttackDamage());
+			dmg = std::min(dmg, (float)a_weapon->GetAttackDamage());
 		}
 	}
 
@@ -384,9 +387,9 @@ public:
 				float t1 = 0.5f * (-b - uglyNumber) / a;
 
 				// Assign the lowest positive time to t to aim at the earliest hit
-				t = min(t0, t1);
+				t = std::min(t0, t1);
 				if (t < FLT_EPSILON) {
-					t = max(t0, t1);
+					t = std::max(t0, t1);
 				}
 
 				if (t < FLT_EPSILON) {
@@ -492,7 +495,7 @@ public:
 						auto vec4 = hkpWorld->gravity;
 						float quad[4];
 						_mm_store_ps(quad, vec4.quad);
-						float gravity = -quad[2] * *RE::Offset::g_worldScaleInverse;
+						float gravity = -quad[2] * RE::bhkWorld::GetWorldScaleInverse();
 						projectileGravity *= gravity;
 					}
 				}

@@ -106,7 +106,7 @@ bool executionHandler::attemptExecute(RE::Actor* a_executor, RE::Actor* a_victim
 };
 
 inline void playExecutionIdle(RE::Actor* a_executor, RE::Actor* a_victim, RE::TESIdleForm* a_executionIdle) {
-	RE::Offset::playPairedIdle(a_executor->GetActorRuntimeData().currentProcess, a_executor, RE::DEFAULT_OBJECT::kActionIdle, a_executionIdle, true, false, a_victim);
+	a_executor->GetActorRuntimeData().currentProcess->SetupSpecialIdle(a_executor, RE::DEFAULT_OBJECT::kActionIdle, a_executionIdle, true, false, a_victim);
 }
 
 void executionHandler::async_queueExecutionThreadFunc(RE::Actor* a_executor, RE::Actor* a_victim, std::vector<RE::TESIdleForm*> a_executionIdleV, int i)

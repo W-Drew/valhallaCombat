@@ -1,12 +1,13 @@
 {
-  "name": "valhallacombat",
-  "version": "1",
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "dependencies": [
-    "fast-cpp-csv-parser",
-    "rsm-binary-io",
-    "simpleini",
-    "spdlog",
-    "xbyak",
-    "rapidcsv"
+      "fast-cpp-csv-parser",
+      "rsm-binary-io",
+      "simpleini",
+      "spdlog",
+      "xbyak",
+      "rapidcsv",
+      "directxmath",
+      "directxtk"
   ]
 }

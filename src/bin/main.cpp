@@ -1,4 +1,4 @@
-/*#include "SimpleIni.h"
+#include "SimpleIni.h"
 #include "include/Hooks.h"
 #include "include/data.h"
 #include "include/debuffHandler.h"
@@ -83,7 +83,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 void onSKSEInit()
 {
 	settings::UpdateHandler::Register();
-}*/
+}
 
 /*SKSEPluginInfo(
 	.Version = Plugin::VERSION,
@@ -98,53 +98,23 @@ void onSKSEInit()
 	while (!IsDebuggerPresent()) { Sleep(100); }
 #endif*/
 
-/*SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
-{
-    
-
-    SKSE::Init(a_skse);
-    SKSE::GetMessagingInterface()->RegisterListener([](SKSE::MessagingInterface::Message *message) {
-        if (message->type == SKSE::MessagingInterface::kDataLoaded)
-        {
-	    [[maybe_unused]] auto s = RE::ConsoleLog::GetSingleton();
-        }
-    });*/
-	/*
-	SKSE::Init(a_skse);
+SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
+{    	
 	SetupLog();
 
-	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
-
-
-	SKSE::GetMessagingInterface()->RegisterListener([](SKSE::MessagingInterface::Message *message) {
-        if (message->type == SKSE::MessagingInterface::kDataLoaded)
-		{
-			logger::info("Getting singleton");
-			auto s = RE::ConsoleLog::GetSingleton();
-			if (!s)
-				logger::info("ConsoleLog singleton is null!");
-			logger::info("About to print");
-            s->Print("Hello, world!");
-		}
-    });
+	SKSE::Init(a_skse);
 
 	auto messaging = SKSE::GetMessagingInterface();
-	if (!messaging)
-		logger::info("Null messaging");
-	logger::info("GetMessagingInterface");
 	if (!messaging->RegisterListener("SKSE", MessageHandler)) {
-		logger::info("RegisterListener failed");
 		return false;
 	}
-	
-	logger::info("onSKSEInit");
-	//onSKSEInit();
 
-	logger::info("return true");*/
-	/*return true;
-}*/
+	onSKSEInit();
 
-/*
+	return true;
+}
+
+
 extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(const VAL_API::InterfaceVersion a_interfaceVersion)
 {
 	//auto api = Messaging::TrueHUDInterface::GetSingleton();
@@ -159,18 +129,4 @@ extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(const VAL_API::InterfaceVers
 	}
 	logger::info("ValhallaCombat::RequestPluginAPI requested the wrong interface version");
 	return nullptr;
-}
-*/
-
-SKSEPluginLoad(const SKSE::LoadInterface *skse) {
-    SKSE::Init(skse);
-
-    // This example prints "Hello, world!" to the Skyrim ~ console.
-    // To view it, open the ~ console from the Skyrim Main Menu.
-    SKSE::GetMessagingInterface()->RegisterListener([](SKSE::MessagingInterface::Message *message) {
-        if (message->type == SKSE::MessagingInterface::kDataLoaded)
-            RE::ConsoleLog::GetSingleton()->Print("Hello, world!");
-    });
-
-    return true;
 }

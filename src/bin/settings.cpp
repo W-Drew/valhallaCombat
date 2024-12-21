@@ -23,9 +23,14 @@ static void setGameSettingb(const char* a_setting, bool a_value)
 {
 	RE::Setting* setting = nullptr;
 	RE::GameSettingCollection* _settingCollection = RE::GameSettingCollection::GetSingleton();
+	_settingCollection->ReadAllSettings();
 	setting = _settingCollection->GetSetting(a_setting);
 	if (!setting) {
-		logger::info("invalid setting: {}", a_setting);
+		logger::info("invalid setting: {}, of {} settings", a_setting, _settingCollection->settings.size());
+		for (auto s : _settingCollection->settings)
+		{
+			logger::info("\t\tof setting {}, {}", s.first, s.second->name);
+		}
 	} else {
 		//logger::info("setting {} from {} to {}", a_setting, setting->GetBool(), a_value);
 		setting->data.b = a_value;
@@ -51,8 +56,8 @@ static void offsetStaminaRegen(float mult, float upperLimit, float lowerLimit = 
 				staminaRegen = mult * staminaRegenMap[race];
 			}
 			/* Clamp regen val.*/
-			staminaRegen = min(staminaRegen, upperLimit);
-			staminaRegen = max(staminaRegen, lowerLimit);
+			staminaRegen = std::min(staminaRegen, upperLimit);
+			staminaRegen = std::max(staminaRegen, lowerLimit);
 			race->data.staminaRegen = staminaRegen;
 			//logger::info("setting stamina regen rate for race {} to {}.", race->GetName(), staminaRegen);
 		}
@@ -61,14 +66,18 @@ static void offsetStaminaRegen(float mult, float upperLimit, float lowerLimit = 
 
 void settings::updateGameSettings() {
 	logger::info("Update game settings...");
-	auto gsc = RE::GameSettingCollection::GetSingleton();
-	if (!gsc) {
-		return;
-	}
 
-	setGameSettingb("bVal_TrueHudAPI_Acq", ValhallaCombat::GetSingleton()->ersh_TrueHUD != nullptr);
-	setGameSettingb("bVal_TrueHUDAPI_SpecialMeter_Acq", facts::TrueHudAPI_HasSpecialBarControl);
+	const auto handler = RE::TESDataHandler::GetSingleton();
+	RE::TESGlobal* bVal_TrueHud_API = handler->LookupForm<RE::TESGlobal>(0x56A25, "ValhallaCombat.esp");
+	RE::TESGlobal* bVal_TrueHud_API_SpecialMeter = handler->LookupForm<RE::TESGlobal>(0x56A26, "ValhallaCombat.esp");
 
+	bVal_TrueHud_API->value = ValhallaCombat::GetSingleton()->ersh_TrueHUD != nullptr;
+	bVal_TrueHud_API_SpecialMeter->value = facts::TrueHudAPI_HasSpecialBarControl;
+
+	// TODO there are globals for nemesis patches in the ValhallaCombat esp which are shown in the MCM, but they do not appear to ever be set
+	// RE::TESGlobal* bVal_Nemesis_EldenCounter_Damage = handler->LookupForm<RE::TESGlobal>(0x56A23, "ValhallaCombat.esp");
+	// RE::TESGlobal* bVal_Nemesis_EldenCounter_NPC = handler->LookupForm<RE::TESGlobal>(0x56A24, "ValhallaCombat.esp");
+	
 	logger::info("...done");
 }
 #define SETTINGFILE_PATH "Data\\SKSE\\Plugins\\ValhallaCombat\\Settings.ini"

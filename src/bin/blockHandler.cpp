@@ -22,7 +22,7 @@ Decrement the timer for actors either perfect blocking or cooling down.*/
 void blockHandler::update() {
 
 	if (isPcTimedBlocking) {
-		pcTimedBlockTimer -= *RE::Offset::g_deltaTime;
+		pcTimedBlockTimer -= RE::GetSecondsSinceLastFrame();
 		if (pcTimedBlockTimer <= 0) {
 			onPcTimedBlockEnd();
 		}
@@ -30,7 +30,7 @@ void blockHandler::update() {
 	if (isPcBlockingCoolDown) {
 		auto pc = RE::PlayerCharacter::GetSingleton();
 		if (pc && !pc->IsBlocking()) {
-			pcTimedBlockCooldownTimer -= *RE::Offset::g_deltaTime;
+			pcTimedBlockCooldownTimer -= RE::GetSecondsSinceLastFrame();
 			if (pcTimedBlockCooldownTimer <= 0) {
 				pcBlockWindowPenalty_update(pcBlockWindowPenalty, false);
 				pcTimedBlockCooldownTimer = settings::fTimedBlockCooldownTime;
@@ -39,7 +39,7 @@ void blockHandler::update() {
 	}
 	if (isPcHot) {
 		if (pcHotTimer > 0) {
-			pcHotTimer -= *RE::Offset::g_deltaTime;
+			pcHotTimer -= RE::GetSecondsSinceLastFrame();
 		} else {
 			isPcHot = false;
 			pcHotTimer = 3.f;
@@ -49,7 +49,7 @@ void blockHandler::update() {
 
 
 	if (isPcTackling) {
-		pcTackleTimer -= *RE::Offset::g_deltaTime;
+		pcTackleTimer -= RE::GetSecondsSinceLastFrame();
 		if (pcTackleTimer <= 0) {
 			isPcTackling = false;
 			isPcTackleCooldown = true;
@@ -58,7 +58,7 @@ void blockHandler::update() {
 	}
 
 	if (isPcTackleCooldown) {
-		pcTackleCooldownTimer -= *RE::Offset::g_deltaTime;
+		pcTackleCooldownTimer -= RE::GetSecondsSinceLastFrame();
 		if (pcTackleCooldownTimer <= 0) {
 			isPcTackleCooldown = false;
 		}
@@ -392,12 +392,14 @@ void blockHandler::resetPcPerfectBlockCountdown() {
 
 bool blockHandler::getIsForcedTimedBlocking(RE::Actor* a_actor)
 {
+	static const RE::BSFixedString gv_bool_force_timed_blocking("val_bForceTimedBlocking");
 	bool ret = false;
 	return (Utils::Actor::getGraphVariable(ret, a_actor, gv_bool_force_timed_blocking) && ret);
 }
 
 bool blockHandler::getIsForcedPerfectBlocking(RE::Actor* a_actor)
 {
+	static const RE::BSFixedString gv_bool_force_perfect_blocking("val_bForcePerfectBlocking");
 	bool ret = false;
 	return (Utils::Actor::getGraphVariable(ret, a_actor, gv_bool_force_perfect_blocking) && ret);
 }
@@ -567,7 +569,7 @@ void blockHandler::playBlockSFX(RE::Actor* blocker, blockType blockType, bool bl
 }
 void blockHandler::playBlockVFX(RE::Actor* blocker, blockType blockType, bool blockedWithWeapon){
 	//
-	auto blockFXNode = RE::Offset::PlaceAtMe(blocker, data::BlockFX, 1, false, false);
+	auto blockFXNode = blocker->PlaceObjectAtMe(data::BlockFX, false);
 	std::string node;
 	if (blockedWithWeapon) {
 		node = "WEAPON";
@@ -575,20 +577,26 @@ void blockHandler::playBlockVFX(RE::Actor* blocker, blockType blockType, bool bl
 		node = "SHIELD";
 	}
 	blockFXNode->MoveToNode(blocker, node);
-	RE::Offset::PlaceAtMe(blockFXNode, data::BlockSpark, 1, false, false);
-	RE::Offset::PlaceAtMe(blockFXNode, data::BlockSparkFlare, 1, false, false);
+	blockFXNode->PlaceObjectAtMe(data::BlockSpark, false);
+	blockFXNode->PlaceObjectAtMe(data::BlockSparkFlare, false);
 	switch (blockType) {
 	case blockType::guardBreaking:
 	case blockType::perfect:
-		RE::Offset::PlaceAtMe(blockFXNode, data::BlockSparkRing, 1, false, false);
+		blockFXNode->PlaceObjectAtMe(data::BlockSparkRing, false);
 	}
 	blockFXNode->SetDelete(true);
 }
 void blockHandler::playBlockScreenShake(RE::Actor* blocker, blockType blockType) {
 	switch (blockType) {
-	case blockType::guardBreaking:RE::Offset::shakeCamera(1.7, RE::PlayerCharacter::GetSingleton()->GetPosition(), 0.8f); break;
-	case blockType::timed: RE::Offset::shakeCamera(1.5, RE::PlayerCharacter::GetSingleton()->GetPosition(), 0.3f); break;
-	case blockType::perfect: RE::Offset::shakeCamera(1.5, RE::PlayerCharacter::GetSingleton()->GetPosition(), 0.4f); break;
+	case blockType::guardBreaking:
+		RE::ShakeCamera(1.7f, RE::PlayerCharacter::GetSingleton()->GetPosition(), 0.8f);
+		break;
+	case blockType::timed:
+		RE::ShakeCamera(1.5f, RE::PlayerCharacter::GetSingleton()->GetPosition(), 0.3f);
+		break;
+	case blockType::perfect:
+		RE::ShakeCamera(1.5f, RE::PlayerCharacter::GetSingleton()->GetPosition(), 0.4f);
+		break;
 	}
 }
 
@@ -693,6 +701,7 @@ void blockHandler::EldenCounterCompatibility::readSettings()
 /// </summary>
 blockHandler::ValorCompatibility::PERILOUS_TYPE blockHandler::ValorCompatibility::get_perilous_state(RE::Actor* a_actor)
 {
+	static const RE::BSFixedString gv_int_perilous_attack_type = "val_perilous_attack_type";
 	int gv;
 	if (a_actor->GetGraphVariableInt(gv_int_perilous_attack_type, gv)) {
 		return static_cast<PERILOUS_TYPE>(gv);

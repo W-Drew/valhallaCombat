@@ -33,7 +33,7 @@
 //		}
 //		//regen a single actor's balance.
 //		auto* balanceData = &actorBalanceMap.find(*it)->second;
-//		float regenVal = balanceData->first * *RE::Offset::g_deltaTime * 1 / balanceRegenTime;
+//		float regenVal = balanceData->first * RE::GetSecondsSinceLastFrame() * 1 / balanceRegenTime;
 //		//logger::debug(regenVal);
 //		//logger::debug(a_balanceData.second);
 //		//logger::debug(a_balanceData.first);

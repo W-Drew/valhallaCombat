@@ -222,6 +222,16 @@ namespace Hooks
 	public:
 		static void install()
 		{
+			// Not REd on VR & N/A since you can't stop the player from lifting their shield (only purpose of the hook)
+			if (REL::Module::IsVR())
+				return; 
+
+			if (!REL::Module::IsSE())
+			{
+				logger::warn("GetWantBlock has not been REd on this version of Skyrim which will prevent block commitment from working");
+				return;
+			}
+
 			REL::Relocation<uintptr_t> hook{ RELOCATION_ID(37376, 00000) };
 			auto& trampoline = SKSE::GetTrampoline();
 

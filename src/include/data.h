@@ -23,9 +23,9 @@ public:
 
 #pragma region blockFX
 	static inline RE::TESObjectACTI* BlockFX;
-	static inline RE::Explosion* BlockSpark;
-	static inline RE::Explosion* BlockSparkFlare;
-	static inline RE::Explosion* BlockSparkRing;
+	static inline RE::BGSExplosion* BlockSpark;
+	static inline RE::BGSExplosion* BlockSparkFlare;
+	static inline RE::BGSExplosion* BlockSparkRing;
 
 #pragma endregion
 

@@ -1,6 +1,5 @@
-#include "include/Utils.h"
-
-
+#include "include/Utils.h"				     
+           
 bool Utils::Actor::isHumanoid(RE::Actor* a_actor)
 {
 	auto bodyPartData = a_actor->GetRace() ? a_actor->GetRace()->bodyPartData : nullptr;
@@ -130,7 +129,7 @@ void Utils::Actor::safeRemovePerk(RE::BGSPerk* a_perk, RE::Actor* a_actor)
 
 bool Utils::Actor::isBackFacing(RE::Actor* actor1, RE::Actor* actor2)
 {
-	auto angle = Utils::TESObjectREFR::GetHeadingAngle(actor1, actor2);
+	auto angle = 0;//Utils::TESObjectREFR::GetHeadingAngle(actor1, actor2);
 	if (90 < angle || angle < -90) {
 		return true;
 	} else {

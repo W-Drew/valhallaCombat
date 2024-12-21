@@ -2,24 +2,24 @@
 #include "include/settings.h"
 #include "include/Utils.h"
 #include "include/data.h"
-static inline const RE::BSFixedString poise_largest = "poise_largest_start";
-static inline const RE::BSFixedString poise_largest_fwd = "poise_largest_start_fwd";
-static inline const RE::BSFixedString poise_large = "poise_med_start";
-static inline const RE::BSFixedString poise_large_fwd = "poise_med_start_fwd";
-static inline const RE::BSFixedString poise_med = "poise_med_start";
-static inline const RE::BSFixedString poise_med_fwd = "poise_med_start_fwd";
-static inline const RE::BSFixedString poise_small = "poise_small_start";
-static inline const RE::BSFixedString poise_small_fwd = "poise_small_start_fwd";
+static inline const std::string poise_largest = "poise_largest_start";
+static inline const std::string poise_largest_fwd = "poise_largest_start_fwd";
+static inline const std::string poise_large = "poise_med_start";
+static inline const std::string poise_large_fwd = "poise_med_start_fwd";
+static inline const std::string poise_med = "poise_med_start";
+static inline const std::string poise_med_fwd = "poise_med_start_fwd";
+static inline const std::string poise_small = "poise_small_start";
+static inline const std::string poise_small_fwd = "poise_small_start_fwd";
 
-static inline const RE::BSFixedString staggerDirection = "staggerDirection";
-static inline const RE::BSFixedString StaggerMagnitude = "StaggerMagnitude";
-static inline const RE::BSFixedString staggerStart = "staggerStart";
-static inline const RE::BSFixedString staggerStop = "staggerStop";
-static inline const RE::BSFixedString bleedOutStart = "BleedoutStart";
-static inline const RE::BSFixedString bleedOutStop = "BleedOutStop";
-static inline const RE::BSFixedString bleedOutGraphBool = "IsBleedingOut";
+static inline const std::string staggerDirection = "staggerDirection";
+static inline const std::string StaggerMagnitude = "StaggerMagnitude";
+static inline const std::string staggerStart = "staggerStart";
+static inline const std::string staggerStop = "staggerStop";
+static inline const std::string bleedOutStart = "BleedoutStart";
+static inline const std::string bleedOutStop = "BleedOutStop";
+static inline const std::string bleedOutGraphBool = "IsBleedingOut";
 
-static inline const RE::BSFixedString recoilLargeStart = "recoilLargeStart";
+static inline const std::string recoilLargeStart = "recoilLargeStart";
 
 
 void reactionHandler::triggerContinuousStagger(RE::Actor* a_causer, RE::Actor* a_reactor, reactionType a_reactionType) {

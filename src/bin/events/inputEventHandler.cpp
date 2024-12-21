@@ -6,7 +6,6 @@
 #include "include/blockHandler.h"
 using EventType = RE::INPUT_EVENT_TYPE;
 using DeviceType = RE::INPUT_DEVICE;
-const auto ui = RE::UI::GetSingleton();
 
 EventResult inputEventHandler::ProcessEvent(RE::InputEvent* const* a_event, RE::BSTEventSource<RE::InputEvent*>*)
 {

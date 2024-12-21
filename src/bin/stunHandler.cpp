@@ -133,7 +133,7 @@ void stunHandler::update() {
 		auto& stunData = it->second;
 
 		if (stunData->getRegenCountDown() > 0) {
-			stunData->modRegenCountDown(-*RE::Offset::g_deltaTime);
+			stunData->modRegenCountDown(-RE::GetSecondsSinceLastFrame());
 			
 			it++;
 			continue;

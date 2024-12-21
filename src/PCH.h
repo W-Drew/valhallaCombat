@@ -16,6 +16,8 @@
 #endif
 #pragma warning(pop)
 
+#include <algorithm>
+
 using namespace std::literals;
 
 namespace logger = SKSE::log;
@@ -42,4 +44,4 @@ namespace std
 
 #define RELOCATION_OFFSET(SE, AE) REL::VariantOffset(SE, AE, 0).offset()
 
-#include "Plugin.h"
+//#include "Plugin.h"
