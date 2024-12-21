@@ -27,20 +27,6 @@ namespace RE
 			REL::Relocation<func_t> func { RELOCATION_ID(37624, 38577) };
 			return func(a_actor);
 		}
-
-		inline void initializeGameSettingCollection()
-		{
-			using func_t = decltype(&initializeGameSettingCollection);
-			REL::Relocation<func_t> func { RELOCATION_ID(10962, 11040) };
-			func();
-		}
-
-		inline RE::Setting* getSetting(RE::GameSettingCollection* collection, const char* name)
-		{
-			using func_t = decltype(&getSetting);
-			REL::Relocation<func_t> func { RELOCATION_ID(16195, 22788) };
-			return func(collection, name);
-		}
 	}
 }
 
