@@ -4,12 +4,12 @@
 #include "include/debuffHandler.h"
 #include "include/events.h"
 #include "include/lib/TrueHUDAPI.h"
-#include "include/logger.h"
 #include "ValhallaCombat.hpp"
 #include "include/settings.h"
 #include "include/Utils.h"
 #include "include/lib/ValhallaCombatAPI.h"
 #include "include/ModAPI.h"
+#include <spdlog/sinks/basic_file_sink.h>
 
 void initTrueHUDAPI() {
 	auto val = ValhallaCombat::GetSingleton();
@@ -85,21 +85,39 @@ void onSKSEInit()
 	settings::UpdateHandler::Register();
 }
 
-/*SKSEPluginInfo(
-	.Version = Plugin::VERSION,
-	.Name = Plugin::NAME,
-	.Author = "D7ry",
-	.StructCompatibility = SKSE::StructCompatibility::Independent,
-	.RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary,
-	.MinimumSKSEVersion = REL::Version{2, 0, 0, 6} /* Game version 1.5.39 */
-//)
+void SetupLog() {
+    auto logsFolder = SKSE::log::log_directory();
+    if (!logsFolder) SKSE::stl::report_and_fail("SKSE log_directory not provided, logs disabled.");
+    auto pluginName = SKSE::PluginDeclaration::GetSingleton()->GetName();
+    auto logFilePath = *logsFolder / std::format("{}.log", pluginName);
+    auto fileLoggerPtr = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilePath.string(), true);
+    std::shared_ptr<spdlog::logger> loggerPtr;
+    if (IsDebuggerPresent()) {
+        auto debugLoggerPtr = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+        spdlog::sinks_init_list loggers{std::move(fileLoggerPtr), std::move(debugLoggerPtr)};
+        loggerPtr = std::make_shared<spdlog::logger>("log", loggers);
+    } else {
+        // If no debugger is attached, only log to the file.
+        loggerPtr = std::make_shared<spdlog::logger>("log", std::move(fileLoggerPtr));
+    }
 
-/*#ifndef NDEBUG
-	while (!IsDebuggerPresent()) { Sleep(100); }
-#endif*/
+#ifndef NDEBUG
+	const auto level = spdlog::level::trace;
+#else
+	const auto level = spdlog::level::info;
+#endif
+
+    spdlog::set_level(level);
+    spdlog::flush_on(level);
+
+	spdlog::set_default_logger(std::move(loggerPtr));
+}
 
 SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 {    	
+/*#ifndef NDEBUG
+	while (!IsDebuggerPresent()) { Sleep(100); }
+#endif*/
 	SetupLog();
 
 	SKSE::Init(a_skse);

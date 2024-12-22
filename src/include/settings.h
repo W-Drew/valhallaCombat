@@ -13,9 +13,8 @@ class settings
 	class UpdateHandler : public RE::BSTEventSink<SKSE::ModCallbackEvent>
 	{
 	public:
-		virtual EventResult ProcessEvent(const SKSE::ModCallbackEvent* a_event, RE::BSTEventSource<SKSE::ModCallbackEvent>*)
+		virtual EventResult ProcessEvent(const SKSE::ModCallbackEvent* a_event, RE::BSTEventSource<SKSE::ModCallbackEvent>* a_eventSource)
 		{
-			logger::info("UpdateHandler::ProcessEvent");
 			if (!a_event) {
 				return EventResult::kContinue;
 			}
@@ -28,17 +27,14 @@ class settings
 
 		static bool Register()
 		{
-			logger::info("settings Register");
 			static UpdateHandler singleton;
 
-			logger::info("GetModCallbackEventSource");
 			auto eventSource = SKSE::GetModCallbackEventSource();
 
 			if (!eventSource) {
 				logger::error("EventSource not found!");
 				return false;
 			}
-			logger::info("AddEventSink");
 			eventSource->AddEventSink(&singleton);
 			logger::info("Register {}", typeid(singleton).name());
 			return true;

@@ -19,24 +19,6 @@ static void setGameSettingf(const char* a_setting, float a_value)
 	}
 }
 
-static void setGameSettingb(const char* a_setting, bool a_value)
-{
-	RE::Setting* setting = nullptr;
-	RE::GameSettingCollection* _settingCollection = RE::GameSettingCollection::GetSingleton();
-	_settingCollection->ReadAllSettings();
-	setting = _settingCollection->GetSetting(a_setting);
-	if (!setting) {
-		logger::info("invalid setting: {}, of {} settings", a_setting, _settingCollection->settings.size());
-		for (auto s : _settingCollection->settings)
-		{
-			logger::info("\t\tof setting {}, {}", s.first, s.second->name);
-		}
-	} else {
-		//logger::info("setting {} from {} to {}", a_setting, setting->GetBool(), a_value);
-		setting->data.b = a_value;
-	}
-}
-
 /*a map of all game races' original stamina regen, in case player wants to tweak the stamina regen values again*/
 static inline robin_hood::unordered_map<RE::TESRace*, float> staminaRegenMap;
 

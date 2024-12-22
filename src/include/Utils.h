@@ -1,6 +1,6 @@
 #pragma once
-#include "offsets.h" 
-#include "bin/ValhallaCombat.hpp"          
+#include "offsets.h"
+#include "bin/ValhallaCombat.hpp"
 #include "include/lib/robin_hood.h"
 #include <cmath>
 #include <numbers>
