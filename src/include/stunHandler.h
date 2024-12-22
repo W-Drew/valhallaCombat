@@ -70,7 +70,7 @@ private:
 		/*Regenerates this actor's stun for the amount of a tick.
 		Returns true if the stun is fully regenerated.*/
 		bool regenStun() {
-			return recoverStun(*RE::Offset::g_deltaTime * 1 / 7 * _maxStun);
+			return recoverStun(RE::GetSecondsSinceLastFrame() * 1 / 7 * _maxStun);
 		}
 		
 		/*Refills current stun to full.*/

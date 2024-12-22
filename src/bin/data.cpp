@@ -2,7 +2,47 @@
 #include "include/stunHandler.h"
 #include "include/Utils.h"
 
+std::vector<std::string> inlineUtils::tokenize(const std::string& delimiter, const std::string& str) {
+	std::vector<std::string> arr;
+	size_t strleng = str.length();
+	size_t delleng = delimiter.length();
+	if (delleng == 0)
+		return arr;//no change
+
+	size_t i = 0;
+	size_t k = 0;
+	while (i < strleng)
+	{
+		int j = 0;
+		while (i + j < strleng && j < delleng && str[i + j] == delimiter[j])
+			j++;
+		if (j == delleng)//found delimiter
+		{
+			arr.push_back(str.substr(k, i - k));
+			i += delleng;
+			k = i;
+		}
+		else
+		{
+			i++;
+		}
+	}
+	arr.push_back(str.substr(k, i - k));
+	return arr;
+}
+
+bool inlineUtils::ToInt32(std::string str, int& value) {
+	const char* strVal = str.c_str();
+	char* endVal = NULL;
+	long ret = strtol(strVal, &endVal, 0);
+	if (ret == LONG_MAX || ret == LONG_MIN || (uintptr_t)endVal != (uintptr_t)strVal + strlen(strVal))
+		return false;
+	value = ret;
+	return true;
+}
+
 using namespace inlineUtils;
+
 void data::loadData() {
 	logger::info("Loading data from game...");
 	auto data = RE::TESDataHandler::GetSingleton();
@@ -81,13 +121,13 @@ void data::loadIdleSection(RE::TESDataHandler* a_data, std::vector<RE::TESIdleFo
 		auto line = ini.GetValue(section, idle);
 		std::vector<std::string> idleConfigs = tokenize("|", line);
 		if (idleConfigs.size() != 2) {
-			//ERROR("Error: wrong config length");
+			//logger::error("Error: wrong config length");
 			continue;
 		}
 		std::string plugin = idleConfigs[0];
 		int form = 0;
 		if (!inlineUtils::ToInt32(idleConfigs[1], form)) {
-			//ERROR("Error: wrong formID");
+			//logger::error("Error: wrong formID");
 			continue;
 		}
 		if (lookupIdle(a_data, form, plugin, idleContainer)) {

@@ -222,6 +222,16 @@ namespace Hooks
 	public:
 		static void install()
 		{
+			// Not REd on VR & N/A since you can't stop the player from lifting their shield (only purpose of the hook)
+			if (REL::Module::IsVR())
+				return; 
+
+			if (!REL::Module::IsSE())
+			{
+				logger::warn("GetWantBlock has not been REd on this version of Skyrim which will prevent block commitment from working");
+				return;
+			}
+
 			REL::Relocation<uintptr_t> hook{ RELOCATION_ID(37376, 00000) };
 			auto& trampoline = SKSE::GetTrampoline();
 
@@ -255,21 +265,6 @@ namespace Hooks
 	};
 
 
-	static void install()
-	{
-		logger::info("Installing hooks...");
-		SKSE::AllocTrampoline(1 << 8);
-		Hook_OnGetAttackStaminaCost::install();
-		//Hook_OnCheckStaminaRegenCondition::install(); //todo: fix this hook
-		Hook_OnRestoreActorValue::install();
-		Hook_OnMeleeHit::install();
-		Hook_OnPlayerUpdate::install();
-		Hook_OnProjectileCollision::install();
-		Hook_OnMeleeCollision::install();
-		Hook_OnAttackAction::install();
-		Hook_GetWantBlock::install();
-		Hook_AttackBlockHandler_OnProcessButton::install();
-		logger::info("...done");
-	}
+	void install();
 }
 

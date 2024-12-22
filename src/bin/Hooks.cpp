@@ -125,7 +125,7 @@ used to block stamina regen in certain situations.*/
 	}
 	void Hook_OnProjectileCollision::OnArrowCollision(RE::Projectile* a_this, RE::hkpAllCdPointCollector* a_AllCdPointCollector)
 	{
-		//DEBUG("hooked arrow collission vfunc");
+		//logger::debug("hooked arrow collission vfunc");
 		if (shouldIgnoreHit(a_this, a_AllCdPointCollector)) {
 			return;
 		};
@@ -134,7 +134,7 @@ used to block stamina regen in certain situations.*/
 
 	void Hook_OnProjectileCollision::OnMissileCollision(RE::Projectile* a_this, RE::hkpAllCdPointCollector* a_AllCdPointCollector)
 	{
-		//DEBUG("hooked missile collission vfunc");
+		//logger::debug("hooked missile collission vfunc");
 		if (shouldIgnoreHit(a_this, a_AllCdPointCollector)) {
 			return;
 		};
@@ -178,12 +178,12 @@ used to block stamina regen in certain situations.*/
 	static void unblock_delayed_threadfunc(RE::AttackBlockHandler* a_this, RE::ButtonEvent* a_event, RE::PlayerControlsData* a_data, float a_time) 
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(a_time * 1000))); // wait for, by default, 0.3 sec
-		SKSE_ADDTASK
+		SKSE::GetTaskInterface()->AddTask
 		(
 			[a_this, a_event, a_data]() 
 			{
 				auto player = RE::PlayerCharacter::GetSingleton();
-				if (player && !blockHandler::GetSingleton()->isBlockKeyHeld() && (player->IsBlocking() || player->AsActorState()->GetAttackState() == RE::ATTACK_STATE_ENUM::kBash) || player->AsActorState()->IsStaggered()) {
+				if (player && !blockHandler::GetSingleton()->isBlockKeyHeld() && (player->IsBlocking() || player->AsActorState()->GetAttackState() == RE::ATTACK_STATE_ENUM::kBash) || player->AsActorState()->actorState2.staggered) {
 					if (a_event) {
 						a_this->ProcessButton(a_event, a_data);
 					}
@@ -193,7 +193,7 @@ used to block stamina regen in certain situations.*/
 				}
 				player->NotifyAnimationGraph("blockStop"); // just in case
 			}
-		)
+		);
 	}
 	void Hook_AttackBlockHandler_OnProcessButton::ProcessButton(RE::AttackBlockHandler* a_this, RE::ButtonEvent* a_event, RE::PlayerControlsData* a_data)
 	{
@@ -245,4 +245,20 @@ used to block stamina regen in certain situations.*/
 		return a_result;
 	}
 
+	void install()
+	{
+		logger::info("Installing hooks...");
+		SKSE::AllocTrampoline(1 << 8);
+		Hook_OnGetAttackStaminaCost::install();
+		//Hook_OnCheckStaminaRegenCondition::install(); //todo: fix this hook
+		Hook_OnRestoreActorValue::install();
+		Hook_OnMeleeHit::install();
+		Hook_OnPlayerUpdate::install();
+		Hook_OnProjectileCollision::install();
+		Hook_OnMeleeCollision::install();
+		Hook_OnAttackAction::install();
+		Hook_GetWantBlock::install();
+		Hook_AttackBlockHandler_OnProcessButton::install();
+		logger::info("...done");
+	}
 }

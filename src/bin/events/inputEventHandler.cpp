@@ -6,7 +6,6 @@
 #include "include/blockHandler.h"
 using EventType = RE::INPUT_EVENT_TYPE;
 using DeviceType = RE::INPUT_DEVICE;
-const auto ui = RE::UI::GetSingleton();
 
 EventResult inputEventHandler::ProcessEvent(RE::InputEvent* const* a_event, RE::BSTEventSource<RE::InputEvent*>*)
 {
@@ -35,13 +34,13 @@ EventResult inputEventHandler::ProcessEvent(RE::InputEvent* const* a_event, RE::
 			default:
 				continue;
 			}
-			if (key == settings::iExecutionKey) {
+			if (settings::iExecutionKey >= 0 && key == (uint32_t)settings::iExecutionKey) {
 				if (button->IsDown()) {
 					executionHandler::GetSingleton()->tryPcExecution();
 				}
 				break;
 			}
-			if (key == settings::iAltBlockKey) {
+			if (settings::iAltBlockKey >= 0 && key == (uint32_t)settings::iAltBlockKey) {
 				if (button->IsDown()) {
 					if (settings::bTimedBlockToggle || settings::bTimedBlockProjectileToggle) {
 						blockHandler::GetSingleton()->onBlockKeyDown();

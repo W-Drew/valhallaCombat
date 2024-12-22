@@ -5,7 +5,7 @@
 //void attackHandler::registerAtk(RE::Actor* a_actor) {
 //	checkout(a_actor);
 //	//TODO:fix bash implementation
-//	//DEBUG("registering attack for {}", actor->GetName());
+//	//logger::debug("registering attack for {}", actor->GetName());
 //	if (a_actor->currentProcess && a_actor->currentProcess->high) {
 //		auto attckData = a_actor->currentProcess->high->attackData;
 //		if (attckData) {
@@ -16,14 +16,14 @@
 //				mtx_attackerHeap.lock();
 //				attackerHeap.emplace(a_actor, ATTACKTYPE::power);
 //				mtx_attackerHeap.unlock();
-//				//DEBUG("registered power attack");
+//				//logger::debug("registered power attack");
 //			}
 //			else {
-//				//DEBUG("registered light attack");
+//				//logger::debug("registered light attack");
 //				mtx_attackerHeap.lock();
 //				attackerHeap.emplace(a_actor, ATTACKTYPE::light);
 //				mtx_attackerHeap.unlock();
-//				//DEBUG("attack heap size: {}", attackerHeap.size());
+//				//logger::debug("attack heap size: {}", attackerHeap.size());
 //			}
 //
 //		}

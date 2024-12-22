@@ -31,7 +31,7 @@ void staminaHandler::staminaHeavyMiss(RE::Actor* a_actor) {
 }
 
 void staminaHandler::staminaHeavyHit(RE::Actor* a_actor) {
-	//DEBUG("stamina heavy hit");
+	//logger::debug("stamina heavy hit");
 	if (!a_actor->IsInCombat() && !settings::bNonCombatStaminaCost) {
 		return;
 	}

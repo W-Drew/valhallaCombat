@@ -60,7 +60,7 @@ namespace MaxsuBlockSpark
 			
 			RE::NiPoint3 sparkPos = defenderNode->worldBound.center;
 
-			//DEBUG("Get Weapon Spark Position!");
+			//logger::debug("Get Weapon Spark Position!");
 			RE::BSTempEffectParticle::Spawn(defender->GetParentCell(), 0.0f, modelName, defenderNode->world.rotate, sparkPos, 1.0f, 4U, defenderNode.get());		}
 	};
 }

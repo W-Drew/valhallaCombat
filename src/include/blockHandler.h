@@ -187,9 +187,6 @@ private:
 	/// <param name="a_projectile">Projectile to be destroyed.</param>
 	inline void destroyProjectile(RE::Projectile* a_projectile);
 
-	static const inline RE::BSFixedString gv_bool_force_timed_blocking = "val_bForceTimedBlocking";
-	static const inline RE::BSFixedString gv_bool_force_perfect_blocking = "val_bForcePerfectBlocking";
-
 public: // plz don't look at this ugly compatiblity thing
 	class EldenCounterCompatibility
 	{
@@ -217,7 +214,6 @@ public: // plz don't look at this ugly compatiblity thing
 			red = 2,     // cannot be blocked, cannot be parried, stagger on hit.
 			blue = 3     // cannot be blocked, cannot be parried, can be bashed to lead to attacker stagger, stagger on hit.
 		};
-		static inline RE::BSFixedString gv_int_perilous_attack_type = "val_perilous_attack_type";
 		static PERILOUS_TYPE get_perilous_state(RE::Actor* a_actor);
 	};
 };

@@ -7,7 +7,7 @@ void attackHandler::cacheAttack(RE::Actor* a_actor) {
 	}
 	checkout(a_actor);
 	//TODO:fix bash implementation
-	//DEBUG("registering attack for {}", actor->GetName());
+	//logger::debug("registering attack for {}", actor->GetName());
 	if (a_actor->GetActorRuntimeData().currentProcess && a_actor->GetActorRuntimeData().currentProcess->high) {
 		auto attckData = a_actor->GetActorRuntimeData().currentProcess->high->attackData;
 		if (!attckData) {
@@ -20,11 +20,11 @@ void attackHandler::cacheAttack(RE::Actor* a_actor) {
 			return;
 		}
 		else {
-			//DEBUG("registered light attack");
+			//logger::debug("registered light attack");
 			mtx.lock();
 			cachedAttackers.insert(a_actor);
 			mtx.unlock();
-			//DEBUG("attack heap size: {}", attackerHeap.size());
+			//logger::debug("attack heap size: {}", attackerHeap.size());
 		}
 
 	}

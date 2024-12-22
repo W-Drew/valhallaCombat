@@ -6,7 +6,7 @@
 //inline const float balanceRegenTime = 6;//time it takes for balance to regen, in seconds.
 //
 //void balanceHandler::update() {
-//	//DEBUG("update");
+//	//logger::debug("update");
 //	/*if (garbageCollectionQueued) {
 //		collectGarbage();
 //		garbageCollectionQueued = false;
@@ -15,37 +15,37 @@
 //	mtx_balanceBrokenActors.lock();
 //	if (balanceBrokenActors.empty()) {//stop updating when there is 0 actor need to regen balance.
 //		mtx_balanceBrokenActors.unlock();
-//		//DEBUG("no balance broken actors, stop update");
+//		//logger::debug("no balance broken actors, stop update");
 //		ValhallaCombat::GetSingleton()->deactivateUpdate(ValhallaCombat::HANDLER::balanceHandler);
 //		return;
 //	}
 //
-//	//DEBUG("non-empty balance map");
+//	//logger::debug("non-empty balance map");
 //	//regenerate balance for all balance broken actors.
 //	
 //	auto it = balanceBrokenActors.begin();
 //	mtx_actorBalanceMap.lock();
 //	while (it != balanceBrokenActors.end()) {
 //		if (!actorBalanceMap.contains(*it)) { //edge case: actor's balance broken but no longer tracked on actor balance map.
-//			//DEBUG("edge case");
+//			//logger::debug("edge case");
 //			it = balanceBrokenActors.erase(it);
 //			continue;
 //		}
 //		//regen a single actor's balance.
 //		auto* balanceData = &actorBalanceMap.find(*it)->second;
-//		float regenVal = balanceData->first * *RE::Offset::g_deltaTime * 1 / balanceRegenTime;
-//		//DEBUG(regenVal);
-//		//DEBUG(a_balanceData.second);
-//		//DEBUG(a_balanceData.first);
+//		float regenVal = balanceData->first * RE::GetSecondsSinceLastFrame() * 1 / balanceRegenTime;
+//		//logger::debug(regenVal);
+//		//logger::debug(a_balanceData.second);
+//		//logger::debug(a_balanceData.first);
 //		if (balanceData->second + regenVal >= balanceData->first) {//this regen exceeds actor's max balance.
-//			//DEBUG("{}'s balance has recovered", (*it)->GetName());
+//			//logger::debug("{}'s balance has recovered", (*it)->GetName());
 //			balanceData->second = balanceData->first;//reset balance.
 //			debuffHandler::GetSingleton()->quickStopStaminaDebuff(*it);
 //			it = balanceBrokenActors.erase(it);
 //			continue;
 //		}
 //		else {
-//			//DEBUG("normal regen");
+//			//logger::debug("normal regen");
 //			balanceData->second += regenVal;
 //		}
 //		it++;
@@ -120,7 +120,7 @@
 //}
 //
 //void balanceHandler::damageBalance(DMGSOURCE dmgSource, RE::Actor* a_aggressor, RE::Actor* a_victim, float damage) {
-//	//DEBUG("damaging balance: aggressor: {}, victim: {}, damage: {}", aggressor->GetName(), victim->GetName(), damage);
+//	//logger::debug("damaging balance: aggressor: {}, victim: {}, damage: {}", aggressor->GetName(), victim->GetName(), damage);
 //	mtx_actorBalanceMap.lock();
 //	if (!actorBalanceMap.contains(a_victim)) {
 //		mtx_actorBalanceMap.unlock();
@@ -129,13 +129,13 @@
 //		return;
 //	}
 //#define a_balanceData actorBalanceMap.find(a_victim)->second
-//	//DEBUG("curr balance: {}", a_balanceData.second);
+//	//logger::debug("curr balance: {}", a_balanceData.second);
 //	if (a_balanceData.second - damage <= 0) { //balance broken, ouch!
 //		a_balanceData.second = 0;
 //		mtx_actorBalanceMap.unlock();
 //		mtx_balanceBrokenActors.lock();
 //		if (!balanceBrokenActors.contains(a_victim)) {//if not balance broken already
-//			//DEBUG("{}'s balance has broken", victim->GetName());
+//			//logger::debug("{}'s balance has broken", victim->GetName());
 //			balanceBrokenActors.insert(a_victim);
 //			if (dmgSource == DMGSOURCE::parry) {
 //				reactionHandler::triggerStagger(a_aggressor, a_victim, reactionHandler::kLarge);
@@ -143,14 +143,14 @@
 //			ValhallaCombat::GetSingleton()->activateUpdate(ValhallaCombat::HANDLER::balanceHandler);
 //		}
 //		else {//balance already broken, yet broken again, ouch!
-//			//DEBUG("{}'s balance double broken", victim->GetName());
+//			//logger::debug("{}'s balance double broken", victim->GetName());
 //			reactionHandler::triggerContinuousStagger(a_aggressor, a_victim, reactionHandler::kLarge);
 //		}
 //		mtx_balanceBrokenActors.unlock();
 //		
 //	}
 //	else {
-//		//DEBUG("normal balance damage.");
+//		//logger::debug("normal balance damage.");
 //		a_balanceData.second -= damage;
 //		mtx_actorBalanceMap.unlock();
 //		mtx_balanceBrokenActors.lock();
