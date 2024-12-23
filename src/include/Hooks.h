@@ -186,8 +186,8 @@ namespace Hooks
 			REL::Relocation<std::uintptr_t> arrowProjectileVtbl{ RE::VTABLE_ArrowProjectile[0] };
 			REL::Relocation<std::uintptr_t> missileProjectileVtbl{ RE::VTABLE_MissileProjectile[0] };
 
-			_arrowCollission = arrowProjectileVtbl.write_vfunc(190, OnArrowCollision);
-			_missileCollission = missileProjectileVtbl.write_vfunc(190, OnMissileCollision);
+			_arrowCollission = arrowProjectileVtbl.write_vfunc(REL::Relocate(0xBE, 0xBE, 0xBF), OnArrowCollision);
+			_missileCollission = missileProjectileVtbl.write_vfunc(REL::Relocate(0xBE, 0xBE, 0xBF), OnMissileCollision);
 			logger::info("hook:OnProjectileCollision");
 		};
 
